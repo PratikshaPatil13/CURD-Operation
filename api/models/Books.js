@@ -5,10 +5,10 @@ const booksSchema = mongoose.Schema({
   name: String,
   price: Number,
   quantity: Number,
-  author: String,
+  author: mongoose.Schema.Types.ObjectId,
   estYear: Date,
   quotes: [String],
-  index: [Number]
+  index: [Number],
 });
 
 module.exports = mongoose.model('Books', booksSchema);
