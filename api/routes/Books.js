@@ -168,36 +168,53 @@ router.post('/limit' , (req , res , next) => {
 //async
 var async = require("async");
 router.post('/as', (req, res, next) => {
-var book = [{name: "Book6", author: "6088e81db698670843caefab"},
-            {name: "Book5", author: "6087dadf19cf8e37d624f0e4"},
-            {name: "Book2", author: "6088e81db698670843caefab"}
-          ]
-  
-//Book.find()
-  //.exec()
-  //.then(booksList =>{
-    async.groupBy(book, function(name, callback){
-      Book.findById(name, function(err, books){
-        if (err) return callback(err);
-        return callback(null, books.author)
-      });
-      
-    },function(err, result){
-      });
-    
+//   var Books = [{name: 'Book6', author: '6088e81db698670843caefab'},
+//                {name: 'Book5', author: '6087dadf19cf8e37d624f0e4'},
+//                {name: 'Book2', author: '6088e81db698670843caefab'}]
 
-  //res.stats(200).json(booksList)})
-  //.catch(err => res.status(500).json({ error: err }));
+// async.groupBy(Books,function(book, callback) {
+// Book.find(book, function(err,name){
+// if(err) return callback(err);
+// callback(null, book.author);
+// });
+// }, function(err, result) {
+// console.log(err , result)
+// });
+// });
+
+// Dynamic
+Book.find({}, function(err, name){
+   async.groupBy(name, function(book, callback){
+     callback(null, book.author)
+   }, function(error, result){
+     console.log(error, result)
+     res.json(result)
+   
+   })
+
+})
+});
+
+router.post('/parallel', (req, res, next) =>{
+  var arr = ["608816ede4066f5f52633690","6088147c62e8ed5e3710f342"];
+  var responseArr = [];
+  async.each(arr, function (n, complete){
+    console.log(1, n);
+    Book.findOne({
+      _id: n
+    }).exec(function (err, data1){
+      console.log(2,n);
+      responseArr.push(data1);
+      
+    });
+  }, function (err){
+
+    res.callback(err, responseArr);
+    res.json(responseArr)
+  });
 
 });
 
-//Lodash
-const _ = require('lodash');
-
-
-
-
-
-
 
 module.exports = router;
+

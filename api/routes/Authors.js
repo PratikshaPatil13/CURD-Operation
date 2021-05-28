@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
       .exec()
       .then(authorList => 
         {
-          async.eachLimit(authorList,2, function(book, callback)
+          async.each(authorList, function(book, callback)
           {
             console.log(book)
             callback()
