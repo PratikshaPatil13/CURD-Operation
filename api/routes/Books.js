@@ -17,25 +17,36 @@ router.get('/:page', (req, res, next) => {
   .catch(err => res.status(500).json({ error: err }));
 });
 
-// display the documents by defining the page number 
+
+//display the documents by defining the page number 
 router.post('/find', (req,res, next) =>{
   var skip = req.body.page
   var page = req.body.page;
-  page =parseInt(page)
+  page = parseInt(page)
   var name = req.body.name  
   var price =req.body.price
   console.log(req.body)
   console.log(2,skip)
   skip = parseInt(skip)
-  const limit = 2
-  skip = (page-1)*limit
+  var response
+  if(page == 0){
+    response = {"message":"Invalid Page Number"};
+    res.json(response)
+    return(0)
+  }
+  // var limit
+  // skip = (page-1)*limit
   //Book.find({name:name}).skip(skip).limit(2)
-  Book.find().skip(skip).limit(2)
-  //Book.find({name : {$regex: name,$options:'i'}
+  Book.find({},{
+    name:1,
+    price:1
+  }).skip(skip).limit(2)
+  //Book.find({name : {$regex: name,$options:'i'}})
   //Book.find({$and: [{name: {$regex : name,$options:'i'}},{price: price}]})
   .exec()
   .then(booksList => res.status(200).json(booksList))
   .catch(err => res.status(500).json({ error: err }));
+
 });
 
 
@@ -145,7 +156,7 @@ router.post('/group' , (req , res , next) => {
   Book.aggregate([{
       $group:{
         _id: "$name",
-        averageQuantity: {$avg: "$quantity"},
+        averageQuantity: {$avg: "$price"},
         count:{$sum:1}
       }}
     ])
